@@ -195,7 +195,6 @@ const getFrequencyData = useCallback(() => {
       normalized.push(dataArrayRef.current[index] / 255)
     }
     
-    return normalized
 return normalized
   }, [])
 
@@ -230,5 +229,6 @@ return normalized
     getFrequencyData,
     audioRef
   }
+}
 
 export default usePlayback
