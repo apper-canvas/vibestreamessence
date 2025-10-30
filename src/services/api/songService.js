@@ -1,8 +1,15 @@
-import songsData from "@/services/mockData/songs.json"
+import songsData from "@/services/mockData/songs.json";
+import React from "react";
 
 class SongService {
   constructor() {
     this.songs = [...songsData]
+    const stored = localStorage.getItem('vibestream_liked_songs')
+    this.likedSongs = stored ? JSON.parse(stored) : []
+  }
+
+saveToStorage() {
+    localStorage.setItem('vibestream_liked_songs', JSON.stringify(this.likedSongs))
   }
 
   async getAll() {
@@ -44,13 +51,40 @@ class SongService {
 
   async getPreviewUrl(id) {
     await this.delay(100)
-    // Return preview-specific URL (10-second samples)
-    // In production, these would be separate preview files
     const song = this.songs.find(s => s.id === id)
     if (!song) return null
     
-    // Generate preview URL based on song ID for consistent previews
     return `https://cdn.vibestream.io/previews/song-${id}-preview.mp3`
+  }
+
+  async toggleLike(songId, userId) {
+    await this.delay(200)
+    const likeKey = `${userId}_${songId}`
+    const index = this.likedSongs.indexOf(likeKey)
+    
+    if (index > -1) {
+      this.likedSongs.splice(index, 1)
+      this.saveToStorage()
+      return false
+    } else {
+      this.likedSongs.push(likeKey)
+      this.saveToStorage()
+      return true
+    }
+  }
+
+  async getLikedSongs(userId) {
+    await this.delay(300)
+    const userLikes = this.likedSongs
+      .filter(like => like.startsWith(`${userId}_`))
+      .map(like => parseInt(like.split('_')[1]))
+    
+    return this.songs.filter(song => userLikes.includes(song.id))
+  }
+
+  isLiked(songId, userId) {
+    const likeKey = `${userId}_${songId}`
+    return this.likedSongs.includes(likeKey)
   }
 
   delay(ms) {

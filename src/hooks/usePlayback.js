@@ -10,27 +10,23 @@ const [currentSong, setCurrentSong] = useState(null)
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [volume, setVolume] = useState(0.7)
-  const [hasPlayedFreeSong, setHasPlayedFreeSong] = useState(false)
   const previewAudioRef = useRef(null)
   const previewTimeoutRef = useRef(null)
-  // Load initial state from localStorage
+// Load initial state from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('vibestream_playback')
     if (saved) {
       const parsed = JSON.parse(saved)
-      setHasPlayedFreeSong(parsed.hasPlayedFreeSong || false)
       setVolume(parsed.volume || 0.7)
     }
   }, [])
-
-  // Save state to localStorage
+// Save state to localStorage
   useEffect(() => {
     const state = {
-      hasPlayedFreeSong,
       volume
     }
     localStorage.setItem('vibestream_playback', JSON.stringify(state))
-  }, [hasPlayedFreeSong, volume])
+  }, [volume])
 
   // Initialize audio element
 useEffect(() => {
@@ -127,20 +123,14 @@ const previewSong = useCallback((song) => {
   }, [])
 
   const playSong = useCallback((song) => {
-    if (!audioRef.current) return false
+if (!audioRef.current) return false
     
     // Stop any active preview first
     stopPreview()
     
-    // Check if user already played their free song
-    if (hasPlayedFreeSong && (!currentSong || currentSong.id !== song.id)) {
-      return false // Blocked - trigger modal
-    }
-
-    // If switching songs, mark as played
+    // Premium users have unlimited playback
     if (!currentSong || currentSong.id !== song.id) {
       setCurrentSong(song)
-      setHasPlayedFreeSong(true)
       audioRef.current.src = song.audioUrl
       audioRef.current.load()
     }
@@ -150,7 +140,7 @@ const previewSong = useCallback((song) => {
       .catch(console.error)
     
     return true
-  }, [currentSong, hasPlayedFreeSong, stopPreview])
+  }, [currentSong, stopPreview])
 
 const pauseSong = useCallback(() => {
     if (audioRef.current) {
@@ -211,13 +201,12 @@ return normalized
     }
   }, [])
 
-  return {
+return {
     currentSong,
     isPlaying,
     isPreviewPlaying,
     currentTime,
     volume,
-    hasPlayedFreeSong,
     playSong,
     pauseSong,
     previewSong,

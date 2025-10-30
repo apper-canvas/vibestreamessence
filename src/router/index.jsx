@@ -3,6 +3,10 @@ import { Suspense, lazy } from "react"
 import Layout from "@/components/organisms/Layout"
 
 const Home = lazy(() => import("@/components/pages/Home"))
+const Playlists = lazy(() => import("@/components/pages/Playlists"))
+const LikedSongs = lazy(() => import("@/components/pages/LikedSongs"))
+const Following = lazy(() => import("@/components/pages/Following"))
+const PlaylistDetail = lazy(() => import("@/components/pages/PlaylistDetail"))
 const NotFound = lazy(() => import("@/components/pages/NotFound"))
 
 const LoadingFallback = () => (
@@ -23,6 +27,38 @@ const mainRoutes = [
     element: (
       <Suspense fallback={<LoadingFallback />}>
         <Home />
+      </Suspense>
+    )
+  },
+  {
+    path: "playlists",
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <Playlists />
+      </Suspense>
+    )
+  },
+  {
+    path: "playlists/:id",
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <PlaylistDetail />
+      </Suspense>
+    )
+  },
+  {
+    path: "liked-songs",
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <LikedSongs />
+      </Suspense>
+    )
+  },
+  {
+    path: "following",
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <Following />
       </Suspense>
     )
   },
