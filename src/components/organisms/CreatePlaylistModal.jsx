@@ -6,8 +6,7 @@ import ApperIcon from "@/components/ApperIcon"
 import Button from "@/components/atoms/Button"
 import Input from "@/components/atoms/Input"
 import Textarea from "@/components/atoms/Textarea"
-import Card from "@/components/atoms/Card"
-import { CardHeader, CardTitle, CardContent } from "@/components/atoms/Card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/atoms/Card"
 import playlistService from "@/services/api/playlistService"
 
 const CreatePlaylistModal = ({ isOpen, onClose }) => {
