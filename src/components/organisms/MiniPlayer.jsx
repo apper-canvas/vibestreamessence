@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import ApperIcon from "@/components/ApperIcon"
 import Button from "@/components/atoms/Button"
+import AudioVisualizer from "@/components/molecules/AudioVisualizer"
 import { formatDuration } from "@/utils/formatDuration"
 
 const MiniPlayer = ({ 
@@ -12,7 +13,8 @@ const MiniPlayer = ({
   onTogglePlayback, 
   onSeek, 
   onVolumeChange,
-  getDuration 
+  getDuration,
+  getFrequencyData
 }) => {
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
 
@@ -51,12 +53,18 @@ const MiniPlayer = ({
         <div className="px-4 py-3">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             {/* Song Info */}
-            <div className="flex items-center space-x-4 min-w-0 flex-1">
+<div className="flex items-center space-x-4 min-w-0 flex-1">
               <img
                 src={currentSong.albumArt}
                 alt={currentSong.album}
                 className="w-14 h-14 rounded-lg object-cover shadow-lg"
               />
+              
+              <AudioVisualizer 
+                getFrequencyData={getFrequencyData} 
+                isPlaying={isPlaying}
+              />
+              
               <div className="min-w-0 flex-1">
                 <h4 className="text-white font-medium truncate hover:text-primary transition-colors cursor-pointer">
                   {currentSong.title}

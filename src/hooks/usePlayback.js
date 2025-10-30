@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 
 const usePlayback = () => {
   const audioRef = useRef(null)
+  const audioContextRef = useRef(null)
+  const analyserRef = useRef(null)
+  const dataArrayRef = useRef(null)
   const [currentSong, setCurrentSong] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -28,10 +31,28 @@ const usePlayback = () => {
   }, [hasPlayedFreeSong, volume])
 
   // Initialize audio element
-  useEffect(() => {
+useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio()
       audioRef.current.preload = 'metadata'
+      audioRef.current.crossOrigin = 'anonymous'
+      
+      // Initialize Web Audio API for visualization
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext
+        audioContextRef.current = new AudioContext()
+        analyserRef.current = audioContextRef.current.createAnalyser()
+        analyserRef.current.fftSize = 256
+        
+        const bufferLength = analyserRef.current.frequencyBinCount
+        dataArrayRef.current = new Uint8Array(bufferLength)
+        
+        const source = audioContextRef.current.createMediaElementSource(audioRef.current)
+        source.connect(analyserRef.current)
+        analyserRef.current.connect(audioContextRef.current.destination)
+      } catch (error) {
+        console.warn('Web Audio API not supported:', error)
+      }
       
       const updateTime = () => setCurrentTime(audioRef.current.currentTime)
       const handleEnded = () => setIsPlaying(false)
@@ -42,6 +63,7 @@ const usePlayback = () => {
       return () => {
         audioRef.current?.removeEventListener('timeupdate', updateTime)
         audioRef.current?.removeEventListener('ended', handleEnded)
+        audioContextRef.current?.close()
       }
     }
   }, [])
@@ -102,6 +124,26 @@ const usePlayback = () => {
     return audioRef.current?.duration || 0
   }, [])
 
+const getFrequencyData = useCallback(() => {
+    if (!analyserRef.current || !dataArrayRef.current) {
+      return new Array(32).fill(0)
+    }
+    
+    analyserRef.current.getByteFrequencyData(dataArrayRef.current)
+    
+    // Sample 32 bars from the frequency data
+    const bars = 32
+    const step = Math.floor(dataArrayRef.current.length / bars)
+    const normalized = []
+    
+    for (let i = 0; i < bars; i++) {
+      const index = i * step
+      normalized.push(dataArrayRef.current[index] / 255)
+    }
+    
+    return normalized
+  }, [])
+
   return {
     currentSong,
     isPlaying,
@@ -113,7 +155,8 @@ const usePlayback = () => {
     togglePlayback,
     seekTo,
     getDuration,
-    setVolume
+    setVolume,
+    getFrequencyData
   }
 }
 
