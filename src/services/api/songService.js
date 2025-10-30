@@ -40,6 +40,17 @@ class SongService {
       song,
       previousRank: index + 1 + Math.floor(Math.random() * 3) - 1
     }))
+}
+
+  async getPreviewUrl(id) {
+    await this.delay(100)
+    // Return preview-specific URL (10-second samples)
+    // In production, these would be separate preview files
+    const song = this.songs.find(s => s.id === id)
+    if (!song) return null
+    
+    // Generate preview URL based on song ID for consistent previews
+    return `https://cdn.vibestream.io/previews/song-${id}-preview.mp3`
   }
 
   delay(ms) {

@@ -1,14 +1,28 @@
+import { useCallback } from "react"
 import { motion } from "framer-motion"
 import ApperIcon from "@/components/ApperIcon"
 import Button from "@/components/atoms/Button"
 import { formatDuration, formatPlayCount } from "@/utils/formatDuration"
 
-const SongCard = ({ song, onPlay, isPlaying = false, showPlayCount = false }) => {
+const SongCard = ({ song, onPlay, isPlaying = false, isPreviewing = false, onPreview, onStopPreview, showPlayCount = false }) => {
+  const handleMouseEnter = useCallback(() => {
+    if (onPreview && !isPlaying) {
+      onPreview(song)
+    }
+  }, [song, onPreview, isPlaying])
+
+  const handleMouseLeave = useCallback(() => {
+    if (onStopPreview && isPreviewing) {
+      onStopPreview()
+    }
+  }, [onStopPreview, isPreviewing])
   return (
-    <motion.div
+<motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02, y: -4 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className="glass rounded-xl p-4 hover:shadow-xl hover:shadow-primary/10 transition-all duration-200 group"
     >
       <div className="flex items-center space-x-4">
@@ -22,12 +36,12 @@ const SongCard = ({ song, onPlay, isPlaying = false, showPlayCount = false }) =>
             <Button
               size="icon"
               variant="play"
-              onClick={() => onPlay(song)}
+onClick={() => onPlay(song)}
               className="w-8 h-8"
             >
               <ApperIcon 
-                name={isPlaying ? "Pause" : "Play"} 
-                className="w-4 h-4" 
+                name={isPreviewing ? "Headphones" : (isPlaying ? "Pause" : "Play")} 
+                className={`w-4 h-4 ${isPreviewing ? 'animate-pulse' : ''}`}
               />
             </Button>
           </div>
