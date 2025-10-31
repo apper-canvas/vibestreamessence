@@ -16,44 +16,35 @@ const Sidebar = () => {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 h-screen w-64 bg-surface border-r border-gray-800 flex flex-col">
-        <div className="p-6">
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <ApperIcon name="Music2" size={20} className="text-white" />
-            </div>
-            <span className="text-xl font-display font-bold text-white">VibeStream</span>
-          </div>
-
-          <nav className="space-y-2">
+<aside className="fixed bottom-0 left-0 right-0 h-20 w-full bg-surface border-t border-gray-800 flex items-center justify-center z-50">
+        <div className="w-full max-w-7xl px-4 flex items-center justify-between">
+<nav className="flex items-center space-x-1 flex-1 justify-center">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                  `flex flex-col items-center justify-center px-4 py-2 rounded-lg transition-all min-w-[64px] ${
                     isActive
-                      ? "bg-primary/20 text-primary"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                      ? "text-primary"
+                      : "text-gray-400 hover:text-white"
                   }`
                 }
               >
-                <ApperIcon name={item.icon} size={20} />
-                <span className="font-medium">{item.label}</span>
+                <ApperIcon name={item.icon} size={24} />
+                <span className="text-xs mt-1 font-medium">{item.label}</span>
               </NavLink>
             ))}
           </nav>
-        </div>
 
-        <div className="mt-auto p-6 border-t border-gray-800">
-          <Button
+<Button
             onClick={() => setShowCreateModal(true)}
             variant="gradient"
-            className="w-full"
+            className="h-12 px-4 rounded-full flex items-center space-x-2"
           >
-            <ApperIcon name="Plus" size={20} className="mr-2" />
-            Create Playlist
+            <ApperIcon name="Plus" size={20} />
+            <span className="hidden sm:inline font-medium">Create</span>
           </Button>
         </div>
       </aside>
